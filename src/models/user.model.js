@@ -1,6 +1,14 @@
 import mongoose, {Schema} from "mongoose";
-import jwt from "jsonwebtoken"
-import bcryptjs from "bcryptjs"
+import jwt from "jsonwebtoken";
+// Change this line
+// const bcrypt = require('bcrypt');
+// to
+import bcrypt from 'bcryptjs';
+
+// The rest of your code remains unchanged
+
+
+
 
 const userSchema = new Schema(
     {
@@ -27,7 +35,7 @@ const userSchema = new Schema(
         },
         avatar: {
             type: String, // cloudinary url
-            // required: true,
+            required: true,
         },
         coverImage: {
             type: String, // cloudinary url
@@ -55,12 +63,12 @@ const userSchema = new Schema(
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password")) return next();
 
-    this.password = await bcryptjs.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
     next()
 })
 
 userSchema.methods.isPasswordCorrect = async function(password){
-    return await bcryptjs.compare(password, this.password)
+    return await bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.generateAccessToken = function(){
@@ -80,7 +88,8 @@ userSchema.methods.generateAccessToken = function(){
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
-            _id: this._id,   
+            _id: this._id,
+            
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
